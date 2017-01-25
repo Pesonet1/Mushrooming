@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Mushrooming!</title>
+    <meta charset="UTF-8">
+
+    <!-- Fits the content better on mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- OpenLayers 3 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.18.2/ol.css" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.18.2/ol-debug.js"></script>
+
+    <!-- jQuery -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.js"></script> -->
+
+    <link rel="stylesheet" href="/stylesheets/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+    <!-- Bootstrap + Awesome Fonts -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <!-- jQuery UI-->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <!-- Slick Carousel plugin -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.js"></script>
+
+    <!-- Application dependent files + WKX & Sidebar plugins -->
+    <script src="/javascripts/map.js"></script>
+    <script src="/javascripts/spaceTimeAnalysis.js"></script>
+    <script src="/javascripts/query_functions.js"></script>
+    <script src="/javascripts/jquery-sidebar.js"></script>
+
+    <!-- Date formatting -->
+    <script src="/javascripts/date.format.js"></script>
+
+    <!-- Chart -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.js"></script>
+
+    <!-- Rainbowvis -->
+    <script src="/javascripts/rainbowvis.js"></script>
+
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/ol_popup.css">
+    <link rel="stylesheet" href="/stylesheets/ol3-sidebar.css">
+
+</head>
+
+<!-- Every time when a page is opened these functions are initialized -->
+
+<body onload="initMap(); spaceTimeAnalysis(); sidebar.open('statistics');">
+
+<div id="sidebar" class="sidebar collapsed">
+
+    <!-- Nav tabs -->
+    <div class="sidebar-tabs">
+        <ul role="tablist">
+            <li><a href="#home" role="tab"><i class="fa fa-home"></i></a></li>
+            <li><a href="#statistics" role="tab"><i class="fa fa-area-chart"></i></a></li>
+            <li><a href="#heat_map" role="tab"><i class="fa fa-globe"></i></a></li>
+            <li><a href="#heat_map_time" role="tab"><i class="fa fa-rocket"></i></a></li>
+        </ul>
+        <ul role="tablist">
+            <li><a href="#sign_out" role="tab"><i class="fa fa-sign-out"></i></a></li>
+        </ul>
+    </div>
+
+    <!-- Tab panes -->
+    <div class="sidebar-content">
+
+        <!-- sidebar content home -->
+        <div class="sidebar-pane" id="home">
+            <h1 class="sidebar-header">
+                <p>Mushrooming</p>
+                <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+            </h1>
+
+            <br>
+            <a href="/map" class="btn btn-info" role="button">MAIN PAGE</a>
+
+        </div>
+
+        <!-- sidebar content you findings -->
+        <div class="sidebar-pane" id="statistics">
+            <h1 class="sidebar-header">
+                Statistics
+                <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+            </h1>
+
+            <br>
+            <p>Draw a polygon over the mushroom finding places you want to analyse. </p>
+            <p><br>Click on the polygon too see statistics for the area. </p>
+            <br>
+            <button type="button" class="btn btn-info" onclick="drawPolygon(); sidebar.close();">START DRAWING</button>
+            <button type="button" class="btn btn-warning" onclick="sidebar.close(); abortDrawing();">ABORT</button>
+        </div>
+
+        <!-- sidebar content heat map -->
+        <div class="sidebar-pane" id="heat_map">
+            <h1 class="sidebar-header">
+                <p>Heatmap</p>
+                <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+            </h1>
+            <br>
+            <p>Create a heatmap of all mushroom findings.</p>
+            <br>
+            <p>Press abort to stop and remove the heatmap.</p>
+            <br>
+            <button type="button" class="btn btn-info" onclick="sidebar.close(); heatMap();">START HEATMAP</button>
+            <button type="button" class="btn btn-warning" onclick="clearHeatMap(); sidebar.close();">ABORT</button>
+
+        </div>
+
+        <!-- sidebar content heat map with time aspect-->
+        <div class="sidebar-pane" id="heat_map_time">
+            <h1 class="sidebar-header">
+                <p>Space-Time Analysis</p>
+                <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+            </h1>
+            <br>
+            <p>Heatmap animations. </p>
+            <br>
+            <p>The hotspot heatmap animation shows how the amount and location of mushroom findings varies over the year.</p>
+            <br>
+            <p>The cumulative heatmap animation shows how the amount of mushroom findings increases over the year.</p>
+            <br>
+            <p>Press abort to stop and remove the heatmaps.</p>
+            <br>
+            <br>
+
+            <input type="radio" name="heatMapTimeMethod" value="hotspot" checked> Hotspot<br>
+            <input type="radio" name="heatMapTimeMethod" value="cumulative"> Cumulative<br>
+            <br>
+            <br>
+            <button type="button" class="btn btn-info" onclick="sidebar.close(); startHeatMapTime(); $('#mySpan').show();">START HEATMAP</button>
+            <button type="button" class="btn btn-warning" onclick="stopHeatMapTime(); sidebar.close();">ABORT</button>
+
+        </div>
+
+        <!-- sidebar content sign out -->
+        <div class="sidebar-pane" id="sign_out">
+            <h1 class="sidebar-header">
+                Sign Out
+                <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+            </h1>
+            <br>
+            <p>Do you want to log out?</p>
+            <br>
+            <button type="button" class="btn btn-warning" onclick="logoutUser()">SIGN OUT</button>
+            <br>
+        </div>
+    </div>
+
+</div>
+
+
+
+<!-- Map container -->
+<div id="map" class="sidebar-map"></div>
+<!-- <div id="heatMapDate">
+</div> -->
+
+    <div id="mySpan" style="display: none;"></div>
+
+
+
+
+
+<!-- OpenLayers 3 Popup -->
+<div id="popup" class="ol-popup">
+    <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+    <div id="popup-content"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Mushroom Findings</h4>
+            </div>
+
+            <div class="modal-body">
+                <canvas id="myLineChart" style="display: inline;"></canvas>
+                <canvas id="myPieChart" style="display: none;"></canvas>
+            </div>
+
+            <div class="modal-footer" >
+                <button id="cumulativeFindings" type="button" class="btn btn-active pull-left" onclick="$('#myLineChart').show(); $('#myPieChart').hide(); $('#cumulativeFindings').removeClass('btn-default').addClass('btn-active'); $('#mushroomSpecies').removeClass('btn-active').addClass('btn-default');">Cumulative Findings</button>
+                <button id="mushroomSpecies" type="button" class="btn btn-default pull-left" onclick="$('#myPieChart').show(); $('#myLineChart').hide(); $('#mushroomSpecies').removeClass('btn-default').addClass('btn-active'); $('#cumulativeFindings').removeClass('btn-active').addClass('btn-default')">Mushroom Species</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+</body>
+
+</html>

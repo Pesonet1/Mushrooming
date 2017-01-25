@@ -1,0 +1,48 @@
+body {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+html, body, #map {
+  height: 100%;
+}
+
+.labelSpecies {
+  display: default;
+  width: 300px;
+}
+
+label {
+  display: inline-block;
+  width: 150px;
+  text-align: left;
+}
+
+#mySpan {
+  position: absolute;
+  bottom: 20px;
+  text-align: center;
+  z-index: 999999;
+  font-family: Sans-Serif;
+  font-size: 50px;
+  opacity: 0.6;
+  font-weight: bold;
+  color: black;
+
+  right: 20px;
+  /*transform: translate(-50%, 0);
+*/
+}
+
+.ui-autocomplete {
+  max-height: 150px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  }
+
+* html .ui-autocomplete {
+  height: 100px;
+}
+
+

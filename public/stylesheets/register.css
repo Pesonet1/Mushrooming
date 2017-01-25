@@ -1,0 +1,36 @@
+html, body {
+    background: url(/images/register.jpg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+    height: 100%;
+    overflow: hidden;
+}
+
+.btn-primary {
+    background: #81C784;
+    border-color: #68A16B;
+    color: #FFFFFF;
+}
+
+a {
+    color: #335723;
+    font-weight: bold;
+
+}
+
+h1 {
+    font: 27px Raleway, sans-serif;
+    max-width: 300px;
+    color: #FFFFFF;
+    text-shadow: 2px 2px #64963D;
+}
+
+p {
+    font: 20px Raleway, sans-serif;
+    max-width: 300px;
+    color: #335723;
+    margin-top: 20px;
+}

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Mushrooming</title>
+
+    <!-- Sets favicon -->
+    <link rel="icon" href="images/favicon.ico">
+
+    <!-- Fits the content better on mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- OpenLayers 3 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.18.2/ol-debug.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.18.2/ol.css">
+
+    <!-- Mapbox for routing -->
+    <script src="https://api.tiles.mapbox.com/mapbox.js/v2.1.5/mapbox.js"></script>
+    <link rel="stylesheet" href='https://api.tiles.mapbox.com/mapbox.js/v2.1.5/mapbox.css'>
+
+    <!-- jQuery -->
+    <link rel="stylesheet" href="/stylesheets/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <!-- Bootstrap + Awesome Fonts -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
+
+    <!-- Slick carousel plugin -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.js"></script>
+
+    <!-- Application dependent files + Mapseed sidebar plugin -->
+    <script src="/javascripts/map.js"></script>
+    <script src="/javascripts/geolocation.js"></script>
+    <script src="/javascripts/routing.js"></script>
+    <script src="/javascripts/query_functions.js"></script>
+    <script src="/javascripts/jquery-sidebar.js"></script>
+
+    <!-- Date formatting -->
+    <script src="/javascripts/date.format.js"></script>
+
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/ol_popup.css">
+    <link rel="stylesheet" href="/stylesheets/ol3-sidebar.css">
+    <link rel="stylesheet" href="/stylesheets/onoffswitch.css">
+
+</head>
+
+<!-- Every time when a page is opened these functions are initialized -->
+<body onload="initMap(); initLocation();">
+
+    <div id="sidebar" class="sidebar collapsed">
+
+        <!-- Nav tabs -->
+        <div class="sidebar-tabs">
+            <ul role="tablist">
+                <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+                <li><a href="#find_mushrooms" role="tab"><i class="fa fa-database"></i></a></li>
+                <li><a href="#your_findings" role="tab"><i class="fa fa-pencil-square-o "></i></a></li>
+                <li><a href="#space_time_analysis" role="tab"><i class="fa fa-rocket"></i></a></li>
+            </ul>
+
+            <ul role="tablist">
+		<li><a href="#settings" role="tab"><i class="fa fa-cog"></i></a></li>
+                <li><a href="#sign_out" role="tab"><i class="fa fa-sign-out"></i></a></li>
+            </ul>
+        </div>
+
+        <!-- Tab panes -->
+        <div class="sidebar-content">
+
+            <!-- sidebar content home -->
+            <div class="sidebar-pane" id="home">
+                <h1 class="sidebar-header">
+                    Mushrooming
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+
+                <br><p><b>Welcome to the mushrooming application!</b></p><br>
+
+                <p>The main functionalities in this application are:</p>
+                <ul>
+                    <li>Viewing different mushroom findings across Sweden</li>
+                    <li>Finding the closest mushroom picking places of desired mushrooms and routes to these</li>
+                    <li>Possibility to insert, update and delete own mushroom findings</li>
+                    <li>Making a space-time analysis of the findings</li>
+                </ul>
+		<hr>              
+ 
+            </div>
+
+
+            <!-- sidebar content find mushrooms -->
+            <div class="sidebar-pane" id="find_mushrooms">
+                <h1 class="sidebar-header">
+                    Closest mushroom
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+
+                <br><p>Find the closest mushroom of a specific species and the shortest route there.</p><br>
+
+                <button class="btn btn-info" onclick="sidebar.open('closest_mushroom_page')">Closest mushroom</button>
+
+                <br><br>
+
+                <button class="btn btn-info" onclick="sidebar.open('shortest_path_to_closest_mushroom_page')">Shortest path to<br>the closest mushroom</button>
+
+            </div>
+
+
+            <!-- sidebar content you findings -->
+            <div class="sidebar-pane" id="your_findings">
+                <h1 class="sidebar-header">
+                    Mushroom findings
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+
+               <br><p>Click the following link for adding, updating and deleting your own mushroom findings:</p><br>
+
+                <a href="/handleMushrooms" class="btn btn-info" role="button">Handle your mushroom findings</a>
+
+            </div>
+
+
+            <!-- sidebar content you findings -->
+            <div class="sidebar-pane" id="space_time_analysis">
+                <h1 class="sidebar-header">
+                    Space-Time Analysis
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+
+                <br><p>Make a space-time analysis of the mushroom picking places.</p><br>
+
+                <a href="/spaceTimeAnalysis" class="btn btn-info" role="button">Space-time analysis</a>
+
+            </div>
+
+
+            <!-- sidebar content settings-->
+            <div class="sidebar-pane" id="settings">
+                <h1 class="sidebar-header">
+                    Settings
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+
+                    <br><p><b>Where am I?</b></p>
+                    <button type="button" id="show_current_position" class="btn btn-info" onclick="currentPosition()">Show current position</button>
+
+                    <br><br>
+
+                    <br><p><b>Turn on/off your geolocation</b></p>
+                    <div class="onoffswitch">
+                        <input type="checkbox" onclick="autoLocationClicked(this)" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" >
+                        <label class="onoffswitch-label" for="myonoffswitch">
+                            <span class="onoffswitch-inner"></span>
+                            <span class="onoffswitch-switch"></span>
+                        </label>
+                    </div>
+
+                </div>
+
+
+            <!-- sidebar content sign out -->
+            <div class="sidebar-pane" id="sign_out">
+                <h1 class="sidebar-header">
+                    Sign Out
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+
+                <br>
+                <p><b>Do you want to log out?</b></p>
+                <br>
+                <button type="button" class="btn btn-warning" onclick="logoutUser()">SIGN OUT</button>
+                <br>
+
+            </div>
+
+
+            <!-- sidebar content for the mushroom info -->
+            <div class="sidebar-pane" id="info">
+                <h1 class="sidebar-header">
+                    Mushroom info
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+
+                <!-- Carousell is added as a div with no content -->
+                <div class="mushroomcontainer">
+                    <div class="mushroomcarousel"></div>
+                    <div class="mushroomcontent"></div>
+                </div>
+
+            </div>
+
+
+            <!-- sidebar content for closest_mushroom_page -->
+            <div class="sidebar-pane" id="closest_mushroom_page">
+                <h1 class="sidebar-header">
+                    Closest mushroom
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+
+                <br>
+                <div class="ui-widget">
+                    <label class="labelSpecies" for="tags">1. Mushroom species: </label><br>
+                    <input type="text" id="tags">
+                </div>
+
+                <br><p><b>2. Which location do you want to use?</b></p>
+                <form>
+                    <input type="radio" id="closest_automatic" name="location_mode" value="automatic" onclick="document.getElementById('manual_location_button').disabled = true" checked> Use current location<br>
+                    <input type="radio" name="location_mode" value="manual" onclick="manuallySelected_closest(this)"> Manually specify the location<br>
+                </form><br>
+
+                <button type="button" id="manual_location_button" class="btn btn-info" onclick="setStartPointClosest()" disabled="true">Specify location</button>
+
+
+                <br><br>
+
+                <button type="button" class="btn btn-info" onclick="getClosestDesiredMushroom(document.getElementById('closest_automatic').checked,false,document.getElementById('tags').value.toLowerCase())">SEARCH</button>
+                <button type="button" class="btn btn-warning" onclick="sidebar.close('find_mushrooms');">ABORT</button>
+            </div>
+
+
+            <!-- sidebar content for fshortest_path_to_closest_mushroom_page -->
+            <div class="sidebar-pane" id="shortest_path_to_closest_mushroom_page">
+                <h1 class="sidebar-header">
+		    Shortest path to the closest mushroom
+		    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+		</h1>
+
+                <br>
+                <div class="ui-widget">
+                    <label class="labelSpecies" for="tags2">1. Mushroom species: </label><br>
+                    <input type="text" id="tags2">
+                </div>
+
+                <br><p><b>2. Which location do you want to use?</b></p>
+                <form>
+                    <input type="radio" id="closest_navigation_automatic" name="location_navigation_mode" value="automatic" onclick="document.getElementById('manual_location_navigation_button').disabled = true" checked> Use current location<br>
+                    <input type="radio" name="location_navigation_mode" value="manual" onclick="manuallySelected(this)"> Manually specify the location<br>
+                </form><br>
+
+                <button type="button" id="manual_location_navigation_button" class="btn btn-info" onclick="setStartPointClosestRoute()" disabled="true">3. Specify location</button>
+                <br><br>
+
+                <p><b>4. Which travel mode do you want to use?</b></p>
+                <form>
+                    <input type="radio" name="travel_mode" value="walking" checked> Walking<br>
+                    <input type="radio" name="travel_mode" value="cycling"> Cycling<br>
+                    <input type="radio" name="travel_mode" value="driving"> Driving<br>
+                </form>
+                <br>
+
+                <button type="button" class="btn btn-info" onclick="getClosestDesiredMushroom(document.getElementById('closest_navigation_automatic').checked, true, document.getElementById('tags2').value.toLowerCase())">SEARCH</button>
+                <button type="button" class="btn btn-warning" onclick="sidebar.close('find_mushrooms');">ABORT</button>
+                </div>
+
+
+                <!-- Sidebar content for the navigation -->
+                <div class="sidebar-pane" id="navigation_detail_page">
+                    <h1 class="sidebar-header">
+                        Navigation Detail
+                        <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                    </h1>
+                    <br>
+
+                    <table width="100%">
+                        <tr><td><p><b>Start point: </b></p></td><td><p id="startpoint_navi"></p></td></tr>
+                        <tr><td><p><b>Destination: </b></p></td><td><p id="destination_navi"></p></td></tr>
+                        <tr><td><p><b>Mode: </b></p></td><td><p id="travelmode_navi"></p></td></tr>
+                        <tr><td><p><b>Distance: </b></p></td><td><p id="distance_navi"></p></td></tr>
+                        <tr><td><p><b>Time: </b></p></td><td><p id="duration_navi"></p></td></tr>
+                    </table>
+
+                    <br>
+
+                    <!-- Clear the navigation route and close the sidebar buttons -->
+                    <button class="btn btn-danger" onclick="clearRoute();clearSelection();">Clear the route</button>
+                    <button type="button" class="btn btn-warning" onclick="sidebar.close();">Close</button>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    <!-- Map container -->
+    <div id="map" class="sidebar-map"></div>
+
+    <!-- OpenLayers 3 Popup -->
+    <div id="popup" class="ol-popup">
+        <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+        <div id="popup-content"></div>
+    </div>
+
+</body>
+
+</html>

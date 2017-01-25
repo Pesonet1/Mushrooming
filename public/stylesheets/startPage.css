@@ -1,0 +1,41 @@
+html {
+    text-align: center;
+}
+
+body {
+    background: url(/images/flowers.jpg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    text-align: center;
+
+}
+.btn-primary {
+    background: #81C784;
+    border-color: #68A16B;
+    color: #FFFFFF;
+
+    position: relative;
+    margin-top: 50vh;
+
+}
+
+h1 {
+    text-align: center;
+    font: 30px Raleway, sans-serif;
+    max-width: 600px;
+    color: #FFFFFF;
+    text-shadow: 2px 2px #64963D;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div {
+    width: 100vw;
+    height:100vh;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
