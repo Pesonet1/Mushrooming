@@ -35,7 +35,6 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(passport_user, done) {
     console.log("deserializeUser start " + passport_user.username);
     User.findOne({ where: { username: passport_user.username } }).then(function(user) {
-
         if (!user) {
             global_user = null;
             return done(null, false, { message: "The user does not exist! Couldn't deserialize!" });
@@ -56,9 +55,6 @@ router.use(session({
 
 router.use(passport.initialize());
 router.use(passport.session());
-// Configuring Passport
-//var flash = require("connect-flash");
-//app.use(flash());
 
 var User = sequelize.define('user', {
     username: Sequelize.STRING,
@@ -80,28 +76,19 @@ var User = sequelize.define('user', {
     }
 });
 
-/*User.sync({force: true}).then(function() {
- return User.create({
- username: 's',
- password: 's'
- })
- });*/
-
 User.sync();
 
 ///////////////
 
 /* GET home page. */
-router.get('/map', isLoggedIn,
-
-    function(req, res, next) {
-        console.log("map data: " + req.user.id + " " + req.user.username + " " + req.user.createdAt);
-        // When the user signs out, prevent that the user gets to the map page again by hitting the back button. Forces it load a fresh copy instead of cached one.
-        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-        res.header('Expires', '-1');
-        res.header('Pragma', 'no-cache');
-        res.render('mushroomStartPage.html', { title: 'Express' });
-    });
+router.get('/map', isLoggedIn, function(req, res, next) {
+    console.log("map data: " + req.user.id + " " + req.user.username + " " + req.user.createdAt);
+    // When the user signs out, prevent that the user gets to the map page again by hitting the back button. Forces it load a fresh copy instead of cached one.
+    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.header('Expires', '-1');
+    res.header('Pragma', 'no-cache');
+    res.render('mushroomStartPage.html', { title: 'Express' });
+});
 
 router.get('/', function(req, res, next) {
     res.render('startPage', { title: 'Express' });
@@ -115,22 +102,20 @@ router.get('/registerAccount', function(req, res, next) {
     res.render('registerAccount', { title: 'Express' });
 });
 
-router.get('/handleMushrooms', isLoggedIn,
-    function(req, res, next) {
-        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-        res.header('Expires', '-1');
-        res.header('Pragma', 'no-cache');
-        res.render('handleMushrooms.html', { title: 'Express' });
-    });
+router.get('/handleMushrooms', isLoggedIn, function(req, res, next) {
+    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.header('Expires', '-1');
+    res.header('Pragma', 'no-cache');
+    res.render('handleMushrooms.html', { title: 'Express' });
+});
 
-router.get('/spaceTimeAnalysis', isLoggedIn,
-    function(req, res, next) {
-        // When the user signs out, prevent that the user gets to the page again by hitting the back button. Forces it load a fresh copy instead of cached one.
-        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-        res.header('Expires', '-1');
-        res.header('Pragma', 'no-cache');
-        res.render('spaceTimeAnalysis.html', { title: 'Express' });
-    });
+router.get('/spaceTimeAnalysis', isLoggedIn, function(req, res, next) {
+    // When the user signs out, prevent that the user gets to the page again by hitting the back button. Forces it load a fresh copy instead of cached one.
+    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.header('Expires', '-1');
+    res.header('Pragma', 'no-cache');
+    res.render('spaceTimeAnalysis.html', { title: 'Express' });
+});
 
 // Check if the user is logged in
 function isLoggedIn(req, res, next) {
@@ -142,102 +127,71 @@ function isLoggedIn(req, res, next) {
 }
 
 // LOGIN - authenticate
-passport.use('login', new LocalStrategy({
-        passReqToCallback: true
-    },
-    function(req, username, password, done) {
-
-        if (username == "" || password == "") { // If the user haven't filled in both username and password, return missingCredentials: true
-            return (null, false, true);
-        }
-
-        User.findOne({ where: { username: username } }).then(function(user) {
-            if (!user || user.password !== password) {
-                return done(null, false, false, { message: "Invalid username or password!" }); //return error, user, message
-            }
-            req.logIn(user, function(err) { console.log("index row 134"); });
-
-            return done(null, user, false);
-        });
+passport.use('login', new LocalStrategy({ passReqToCallback: true }, function(req, username, password, done) {
+    if (username == "" || password == "") { // If the user haven't filled in both username and password, return missingCredentials: true
+        return (null, false, true);
     }
-));
+
+    User.findOne({ where: { username: username } }).then(function(user) {
+        if (!user || user.password !== password) {
+            return done(null, false, false, { message: "Invalid username or password!" }); //return error, user, message
+        }
+        req.logIn(user, function(err) { console.log("index row 134"); });
+
+        return done(null, user, false);
+    });
+}));
 
 // LOGIN
-router.post('/api/loginUser',
+router.post('/api/loginUser', function(req, res, next) {
+    req.logout();
 
-    function(req, res, next) {
-        req.logout();
+    passport.authenticate('login', function(err, user, missingCredentials) {
+        if (err) { return res.json("error"); }
+        if (missingCredentials) { return res.json('missingCredentials'); }
+        if (!user) { return res.json('invalidCredentials'); }
+        return res.json("validCredentials");
 
-        passport.authenticate('login', function(err, user, missingCredentials) {
-
-            if (err) {
-                return res.json("error");
-            }
-            if (missingCredentials) {
-                return res.json('missingCredentials');
-            }
-            if (!user) {
-                return res.json('invalidCredentials');
-            }
-            return res.json("validCredentials");
-
-        })(req, res, next);
-    }
-);
+    })(req, res, next);
+});
 
 // REGISTER USER - authenticate
-passport.use('signUp', new LocalStrategy({
-        passReqToCallback: true
-    },
-    function(req, username, password, done) {
+passport.use('signUp', new LocalStrategy({ passReqToCallback: true }, function(req, username, password, done) {
+    if (username === "" || password === "") {
+        return done(null, false, true); //If the user haven't filled in both username and password, return missingCredentials: true
+    }
 
-        if (username === "" || password === "") {
-            return done(null, false, true); //If the user haven't filled in both username and password, return missingCredentials: true
+    User.findOne({ where: { username: username } }).then(function(user) {
+        if (user) { // If the username is already taken
+            return done(null, false, false, { message: "The username is already taken!" }); //return error, user, message
+        } else { // If username is available - create a user with the given username, email and password
+            var newUser = User.create({
+                username: username,
+                password: password,
+                email: req.param('email')
+            });
+            return done(null, newUser, false);
         }
-
-        User.findOne({ where: { username: username } }).then(function(user) {
-            if (user) { // If the username is already taken
-                return done(null, false, false, { message: "The username is already taken!" }); //return error, user, message
-            } else { // If username is available - create a user with the given username, email and password
-                var newUser = User.create({
-                    username: username,
-                    password: password,
-                    email: req.param('email')
-                });
-                return done(null, newUser, false);
-            }
-        });
-    }));
+    });
+}));
 
 // REGISTER USER
-router.post('/api/registerUser',
-    function(req, res, next) {
-        passport.authenticate('signUp', function(err, newUser, missingCredentials) {
+router.post('/api/registerUser', function(req, res, next) {
+    passport.authenticate('signUp', function(err, newUser, missingCredentials) {
+        if (err) { return res.json("error"); }
+        if (missingCredentials) { return res.json('missingCredentials'); }
+        if (!newUser) { return res.json('invalidCredentials'); }
+        return res.json('validCredentials');
 
-            if (err) {
-                return res.json("error");
-            }
-            if (missingCredentials) {
-                return res.json('missingCredentials');
-            }
-            if (!newUser) {
-                return res.json('invalidCredentials');
-            }
-            return res.json('validCredentials');
-
-        })(req, res, next);
-    }
-);
+    })(req, res, next);
+});
 
 // LOGOUT
-router.post('/api/logoutUser',
-
-    function(req, res, next) {
-        req.logOut();
-        req.session.destroy();
-        return res.json("logoutUser");
-    }
-);
+router.post('/api/logoutUser', function(req, res, next) {
+    req.logOut();
+    req.session.destroy();
+    return res.json("logoutUser");
+});
 
 ///////////////////////////
 
@@ -285,7 +239,6 @@ router.post('/api/getAllDistinctSpecies', function(req, res) {
 // Get all findings of the user
 router.get('/api/getAllFindings', isLoggedIn, function(req, res) {
     var results = [];
-
     var user_id = global_user.id;
 
     var query = apiClient.query("SELECT id, user_id, lat, lon, name, quantity, unit, finding_place, precision, county, municipality, province, date, comment, biotope, biotope_description, substrate FROM mushroom_findings WHERE user_id = ($1)", [user_id]);
@@ -306,7 +259,6 @@ router.get('/api/getAllFindings', isLoggedIn, function(req, res) {
 // Inserting points to database
 router.post('/api/insertFinding', isLoggedIn, function(req, res) {
     var results = [];
-
     var latitude = req.body.latitude;
     var longitude = req.body.longitude;
     var mushroom_name = req.body.mushroom_name;
@@ -343,7 +295,6 @@ router.post('/api/insertFinding', isLoggedIn, function(req, res) {
 // Update user finding in database
 router.post('/api/updateFinding', isLoggedIn, function(req, res) {
     var results = [];
-
     var updateMushroomName = req.body.updateMushroomName;
     var updateQuantity = req.body.updateQuantity;
     var updateUnit = req.body.updateUnit;
@@ -379,7 +330,6 @@ router.post('/api/updateFinding', isLoggedIn, function(req, res) {
 // Delete user finding from database
 router.post('/api/deleteFinding', isLoggedIn, function(req, res) {
     var results = [];
-
     var id = req.body.id;
     var user_id = global_user.id;
 
@@ -421,11 +371,9 @@ router.get('/api/getUniqueName', function(req, res) {
 
 // GET ALL the spaceTime polygons from DB
 router.post('/api/getAllPoly', isLoggedIn, function(req, res) {
-
     var results = [];
     var data = {};
     var user_id = global_user.id;
-
 
     var query = apiClient.query("SELECT * FROM space_time_polygons WHERE user_id = $1", [user_id]);
 
@@ -444,7 +392,6 @@ router.post('/api/getAllPoly', isLoggedIn, function(req, res) {
 
 // INSERT the spaceTime polygons into DB
 router.post('/api/insertPoly', isLoggedIn, function(req, res) {
-
     var results = [];
     var data = { id: req.body.id, wkt: req.body.wkt };
     var user_id = global_user.id;
@@ -509,7 +456,6 @@ router.post('/api/deletePoly', isLoggedIn, function(req, res) {
 
 // ANALYSE the mushroom findings that are within the spaceTime polygon
 router.post('/api/stpAnalyse', function(req, res) {
-
     var results = [];
     var data = { id: req.body.id }; // spaceTime polygon id
 
@@ -548,7 +494,4 @@ router.post('/api/mostPopularFindingPlace', function(req, res) {
     });
 });
 
-
-
-// The position of this might affect?! It has been changed
 module.exports = router;
